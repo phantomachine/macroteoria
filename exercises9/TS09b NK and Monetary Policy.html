@@ -13205,9 +13205,9 @@ r(P_{t}, A_{t}) = \frac{[P_{t}(i) -MC_{t}]Y_{t}(i)}{P_{t}}-\frac{\theta}{2}\left
 $$<p>The firm's current profit is given by the first two terms of the expected total profit function: Current revenue net of wage bill and price adjustment cost (assumed convex cost function) with $\theta$ being a positive-valued parameter.</p>
 <p>Firm $i$'s Bellman equation is</p>
 $$
-V\left[P_{t-1}(i), A_t\right] = \max_{P_{t}(i)}\left\{r(P_{t}, A_{t})+\beta \mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}V \left( P_t(i), A_{t+1} \right)\right]
+V\left[P_{t-1}(i), A_t\right] = \max_{P_{t}(i)}\left\{r(P_{t}, A_{t})+\beta \mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}\frac{P_{t+1}}{P_{t}}V \left( P_t(i), A_{t+1} \right)\right]
  \right\},
-$$<p>where $\Pi$ is the deterministic steady-state gross inflation. Continuation profit is discounted by the (equilibrium) stochastic pricing kernel $\beta \lambda_{t+1}/\lambda_{t}$.</p>
+$$<p>where $\Pi$ is the deterministic steady-state gross inflation. Continuation profit is discounted by the (equilibrium) stochastic pricing kernel $\beta \frac{\lambda_{t+1}}{\lambda_{t}}\frac{P_{t+1}}{P_{t}}$. Note that $\lambda_{t}$ is the date-$t$ and state $(s_{t}$ shadow price of <em>nominal</em> wealth in consumer's budget constraint. To convert it into real quantities, we need to adjust for inflation.</p>
 
 </div>
 </div>
@@ -13217,7 +13217,7 @@ $$<p>where $\Pi$ is the deterministic steady-state gross inflation. Continuation
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Question-3.2">Question 3.2<a class="anchor-link" href="#Question-3.2">&#182;</a></h3><p>Show that the value of the firm can also be expressed as:
 $$
-V(P_{t-1}(i),A_{t}) = \max_{\{P_{t}(i)\}_{t=0}^{\infty}}\mathbb{E}_{t}\sum_{s=0}^{\infty} \frac{\beta^{s}\lambda_{t+s}}{\lambda_{t}} r(P_{t+s},A_{t+s}).
+V(P_{t-1}(i),A_{t}) = \max_{\{P_{t}(i)\}_{t=0}^{\infty}}\mathbb{E}_{t}\sum_{s=0}^{\infty} \frac{\beta^{s}\lambda_{t+s}}{\lambda_{t}}\frac{P_{t+1}}{P_{t}} r(P_{t+s},A_{t+s}).
 $$</p>
 <p>Assume that $V$ is differentiable with respect to its first argument.</p>
 
@@ -13238,7 +13238,7 @@ $$</p>
 <h3 id="Question-3.3">Question 3.3<a class="anchor-link" href="#Question-3.3">&#182;</a></h3><p>Assume symmetric pricing equilibrium: $P_{t}(i) = P_{t}$. Show that an optimal pricing strategy in such an equilibrium is dynamic and that it satisfies the firm's Euler equation:</p>
 $$
 \Pi_{t}(\Pi_{t} - \Pi) -\frac{\varepsilon_{t}}{\theta}\left(\frac{MC_{t}}{P_{t}} - \frac{\varepsilon_{t} -1 }{\varepsilon_{t}}\right) - \frac{\varepsilon_{t}}{2}(\Pi_{t}-\Pi)^{2}
-= \beta\mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}(\Pi_{t+1}-\Pi)\Pi_{t+1}\frac{Y_{t+1}}{Y_{t}}\right]
+= \beta\mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}\frac{P_{t+1}}{P_{t}}(\Pi_{t+1}-\Pi)\Pi_{t+1}\frac{Y_{t+1}}{Y_{t}}\right]
 $$<p>where $\Pi_{t} := P_{t}/P_{t-1}$.
 Can you put into human language what this first-order condition means, from the perspective of each firm $i$?</p>
 <p>Also show that in the special case where $\theta = 0$, the dynamic pricing problem reduces to the well-known Ramsey optimal monopoly markup pricing formula.</p>
@@ -13252,7 +13252,7 @@ Can you put into human language what this first-order condition means, from the 
 <h4 id="Answer">Answer<a class="anchor-link" href="#Answer">&#182;</a></h4><p>The FOC for the RHS problem in the firm's Bellman equation is
 $$
 \underbrace{\frac{\partial r(P_{t}(i), A_{t})}{\partial P_{t}(i)}}_{\text{Marginal current profit}}
-=-\underbrace{\beta \mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}\frac{\partial V \left( P_{t}(i), A_{t+1} \right)}{\partial P_{t}(i)} 
+=-\underbrace{\beta \mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}\frac{P_{t+1}}{P_{t}}\frac{\partial V \left( P_{t}(i), A_{t+1} \right)}{\partial P_{t}(i)} 
 \right]}_{\text{Expected P.V. of future marginal value of firm (i.e., future profits)}}.
 $$</p>
 <p>Price setting in this model is a balancing act between current and expected future profits.</p>
@@ -13300,13 +13300,17 @@ $$</p>
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Updating the Envelop condition one period ahead, and plugging that into the FOC w.r.t. $P_{t}(i)$, we get</p>
 $$
+\begin{split}
 \left(\frac{P_{t}(i)}{P_{t-1}(i)} - \Pi \right)\frac{P_{t}(i)}{P_{t-1}(i)} 
 -\frac{\varepsilon_{t}}{2}\left(\frac{P_{t}(i)}{P_{t-1}(i)}-\Pi\right)^{2}
--\frac{\varepsilon_{t}}{\theta}\left(\frac{MC_{t}}{P_{t}} - \frac{\varepsilon_{t} -1 }{\varepsilon_{t}}\right)  
-= \beta \mathbb{E}_{t}\left[
-\frac{\lambda_{+1}}{\lambda}
+&amp;
+-\frac{\varepsilon_{t}}{\theta}\left(\frac{MC_{t}}{P_{t}} - \frac{\varepsilon_{t} -1 }{\varepsilon_{t}}\right) 
+\\
+&amp;= \beta \mathbb{E}_{t}\left[
+\frac{\lambda_{t+1}}{\lambda_t}\frac{P_{t+1}}{P_{t}}
 \left(\frac{P_{t+1}(i)}{P_{t}(i)}-\Pi\right)\left(\frac{P_{t+1}(i)}{P_{t}(i)}\right)\frac{Y_{t+1}(i)}{Y_{t}(i)}
 \right].
+\end{split}
 $$
 </div>
 </div>
@@ -13329,7 +13333,7 @@ $$</p>
 <p>So the FOC above, in a symmetric pricing equilibrium, yields the functional equation:</p>
 $$
 (\Pi_{t} - \Pi)\Pi_{t} -\frac{\varepsilon_{t}}{\theta}\left(\frac{MC_{t}}{P_{t}} - \frac{\varepsilon_{t} -1 }{\varepsilon_{t}}\right) - \frac{\varepsilon_{t}}{2}(\Pi_{t}-\Pi)^{2}
-= \beta\mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}(\Pi_{t+1}-\Pi)\Pi_{t+1}\frac{Y_{t+1}}{Y_{t}}\right]
+= \beta\mathbb{E}_{t}\left[\frac{\lambda_{t+1}}{\lambda_{t}}\frac{P_{t+1}}{P_{t}}(\Pi_{t+1}-\Pi)\Pi_{t+1}\frac{Y_{t+1}}{Y_{t}}\right]
 \tag{NK-goods-pricing}
 $$<p>where $\Pi_{t} := P_{t}/P_{t-1}$ is gross CPI inflation in the model.</p>
 <p>Given aggregate demand growth conditions ($Y_{t+1}/Y_{t}$), the state of demand responsiveness to prices ($\varepsilon_{t}$), and the state of production technology $A_{t}$ and labor market conditions $W_{t}$ (acting through $MC_{t}$), this functional equation characterizes a fixed point solution for $\Pi_{t}$ as a function of the aggregate state of the economy. (This equilibrium firm-pricing Euler condition is akin to the consumption Euler equation which pins down an optimal saving function for a consumer.)</p>
