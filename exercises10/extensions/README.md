@@ -4,7 +4,7 @@ DMP
 This example computes a version of the Diamond-Mortensen-Pissarides labor search and matching model.
 This version replicates Petrosky-Nadeau and Zhang's QE example of Hagedorn and Manovskii.
 
-There is an ocassionally binding non-negativity constraint on vacancies $V_{t}$.
+There is an ocassionally binding non-negativity constraint on vacancies :math:`V_{t}`.
 
 Expect that this constraint tends to bind in states with low employment and low productivity.
 
