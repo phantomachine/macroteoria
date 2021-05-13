@@ -1,0 +1,542 @@
+(************** Content-type: application/mathematica **************
+                     CreatedBy='Mathematica 5.0'
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[     18518,        448]*)
+(*NotebookOutlinePosition[     19185,        471]*)
+(*  CellTagsIndexPosition[     19141,        467]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["S is stochastic, everything else deterministic.", "Subsection"],
+
+Cell[BoxData[{
+    RowBox[{
+      RowBox[{"<<", 
+        StyleBox[
+          RowBox[{"Statistics", 
+            StyleBox["`",
+              "MB"], "DescriptiveStatistics", 
+            StyleBox["`",
+              "MB"]}]]}], 
+      StyleBox[";",
+        "MB"]}], "\[IndentingNewLine]", 
+    RowBox[{
+      RowBox[{"<<", 
+        StyleBox[
+          RowBox[{"Statistics", 
+            StyleBox["`",
+              "MB"], "MultiDescriptiveStatistics", 
+            StyleBox["`",
+              "MB"]}]]}], 
+      StyleBox[";",
+        "MB"]}], "\[IndentingNewLine]", \($HistoryLength = 
+        1;\), "\[IndentingNewLine]", \(Unprotect[In, 
+        Out];\), "\[IndentingNewLine]", \(SD[x_] := 
+        Round[1000  StandardDeviation[x]]\/1000. ;\), "\[IndentingNewLine]", \
+\(Mn[x_] := Round[1000  Mean[x]]\/1000. \)}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[StyleBox["HP Filtering:",
+  FontFamily->"Courier New"]], "Subsubsection"],
+
+Cell[TextData[{
+  StyleBox["Fix the length of the sample ",
+    FontFamily->"Courier New"],
+  Cell[BoxData[
+      \(T\)]],
+  StyleBox[" and the smoothing parameter ",
+    FontFamily->"Courier New"],
+  Cell[BoxData[
+      \(smooth\)]],
+  StyleBox[".\nIf the data series is named ",
+    FontFamily->"Courier New"],
+  Cell[BoxData[
+      \(DATA\)]],
+  StyleBox[", then the filtered series is ",
+    FontFamily->"Courier New"],
+  Cell[BoxData[
+      \(B . DATA\)]],
+  StyleBox[" and the log-deviation from trend is ",
+    FontFamily->"Courier New"],
+  Cell[BoxData[
+      \(Log[DATA] - Log[B . DATA]\)]]
+}], "Text"],
+
+Cell[BoxData[
+    \(T = 212; smooth = 10. \^5; 
+    A = Append[
+        Append[Prepend[
+            Prepend[Table[
+                PadRight[PadLeft[{\(-1\), 4, \(-6\), 4, \(-1\)}, t + 2], 
+                  T], {t, 3, T - 2}], PadRight[{2, \(-5\), 4, \(-1\)}, T]], 
+            PadRight[{\(-1\), 2, \(-1\)}, T]], 
+          PadLeft[{\(-1\), 4, \(-5\), 2}, T]], 
+        PadLeft[{\(-1\), 2, \(-1\)}, T]]; 
+    B = Inverse[IdentityMatrix[T] - smooth\ A];\)], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Set parameter values", "Subsubsection"],
+
+Cell[BoxData[{
+    \(r = 0.012; p = 1; \[Mu] = 1.355; \[Alpha] = 0.72; \[Beta] = \[Alpha]; 
+    z = 0.4; c = 0.213; \[Sigma] = 0.057; \[Gamma] = 0.22;\), "\n", 
+    \(n = 1000; \[Lambda] = 
+      n\ \[Gamma]; \[CapitalDelta] = \[Sigma]\/\@\[Lambda];\), "\n", 
+    \(\(s = 
+        1\/10\ Table[\[ExponentialE]\^\(t\ \[CapitalDelta]\), {t, \(-n\), 
+              n}];\)\), "\n", 
+    \(\(x = N[Table[\(1\/2\) \((1 - t\/n)\), {t, \(-n\), n}]];\)\), "\n", 
+    \(\(s = N[s];\)\), "\n", 
+    \(\[Theta] = 
+      Re[t /. \[InvisibleSpace]Table[
+            FindRoot[\(\((r + s\[LeftDoubleBracket]i\[RightDoubleBracket])\)\ \
+t\^\[Alpha]\)\/\[Mu] + \[Beta]\ t - \(\((1 - \[Beta])\)\ \((p - z)\)\)\/c, \
+{t, 1}], {i, 1, 2\ n + 1}]]; \[Theta]1 = 2\ \[Theta]; count = 0;\)}], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Compute the v-u ratio state-by-state.", "Subsubsection"],
+
+Cell[BoxData[
+    \(\(While[Plus @@ \(\((\[Theta]1 - \[Theta])\)\^2\) > 10\^\(-13\), 
+        count += 1; \[Theta]1 = \[Theta]; \[Theta] = 
+          Re[t /. \[InvisibleSpace]Table[
+                FindRoot[\(\((r + s\[LeftDoubleBracket]i\[RightDoubleBracket] \
++ \[Lambda])\)\ t\^\[Alpha]\)\/\[Mu] + \[Beta]\ t - \(\((1 - \[Beta])\)\ \((p \
+- z)\)\)\/c - \(\[Lambda]\ \((x\[LeftDoubleBracket]i\[RightDoubleBracket]\ \
+\[Theta]\[LeftDoubleBracket]Min[i + 1, 2\ n + 1]\[RightDoubleBracket]\^\
+\[Alpha] + \((1 - x\[LeftDoubleBracket]i\[RightDoubleBracket])\)\ \[Theta]\
+\[LeftDoubleBracket]Max[i - 1, 1]\[RightDoubleBracket]\^\[Alpha])\)\)\/\[Mu], \
+{t, \[Theta]\[LeftDoubleBracket]i\[RightDoubleBracket]}], {i, 1, 
+                  2\ n + 1}]]];\)\)], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Ergodic Distributions", "Subsubsection"],
+
+Cell[TextData[StyleBox["Compute the fraction of time spent in each state. \
+This step and the next can be skipped. ",
+  FontFamily->"Courier New"]], "Text"],
+
+Cell[BoxData[{
+    \(\[CapitalPi] = 
+      N[Append[Prepend[Table[1\/\(2  n + 1\), {i, 1, 2  n + 1}], 0], 0]]; 
+    count = 0; \[CapitalPi]1 = 2  \[CapitalPi];\), "\n", 
+    \(\(\(While[
+        Apply[Plus, \((\[CapitalPi] - \[CapitalPi]1)\)\^2] > 
+          10\^\(-15\), \[IndentingNewLine]\[CapitalPi]1 = \[CapitalPi]; 
+        count += 
+          1; \[IndentingNewLine]\[IndentingNewLine]\[CapitalPi] = \(1\/2\) \
+\((\[CapitalPi] + 
+                Append[Prepend[
+                    Table[x[\([Max[i - 1, 
+                                1]]\)] \[CapitalPi][\([i]\)] + \((1 - 
+                              x[\([Min[i + 1, 
+                                    2  n + 1]]\)])\) \[CapitalPi][\([i + 
+                                2]\)], {i, 1, 2  n + 1}], 0], 0])\)];\)\(\n\)
+    \)\), "\[IndentingNewLine]", 
+    \(\(\[CapitalPi] = Drop[Drop[\[CapitalPi], 1], \(-1\)];\)\)}], "Input"],
+
+Cell["\<\
+Compute long-run statistics {{mean separation rate, mean v-u ratio, mean \
+job-finding rate},{std dev of separation rate, std dev of v-u ratio, std dev \
+of job finding rate}}.\
+\>", "Text",
+  FontFamily->"Courier New"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \({{\[CapitalPi] . 
+          s, \[CapitalPi] . \[Theta], \[CapitalPi] . \((\[Mu]\ \[Theta]\^\(1 \
+- \[Alpha]\))\)}, \n{\((\[CapitalPi] . Log[s]\^2 - \((\[CapitalPi] . \
+Log[s])\)\^2)\)\^\(1/2\), \((\[CapitalPi] . Log[\[Theta]]\^2 - \
+\((\[CapitalPi] . Log[\[Theta]])\)\^2)\)\^\(1/2\), \((\[CapitalPi] . \
+Log[\[Mu]\ \[Theta]\^\(1 - \[Alpha]\)]\^2 - \((\[CapitalPi] . Log[\[Mu]\ \
+\[Theta]\^\(1 - \[Alpha]\)])\)\^2)\)\^\(1/2\)}}\)], "Input"],
+
+Cell[BoxData[
+    \({{0.10033189543539511`, 0.9818680829454866`, 
+        1.348069174708465`}, {0.0814081294394793`, 0.006756183973871959`, 
+        0.0018917315126722243`}}\)], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[StyleBox["Compute correlations, autocorrelations, standard \
+deviations, etc.", "Subsubsection"]], "Subsubsection"],
+
+Cell["Initialization", "Text",
+  FontFamily->"Courier New"],
+
+Cell[BoxData[{
+    \(h = n + 1; t = 0; 
+    unemp = s\[LeftDoubleBracket]h\[RightDoubleBracket]\/\(s\
+\[LeftDoubleBracket]h\[RightDoubleBracket] + \[Mu]\ \[Theta]\
+\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \[Alpha]\)\); 
+    vacan = unemp\ \[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]; 
+    t0 = 0; obs = 0;\), "\n", 
+    \(\(results = {{unemp, h}};\)\), "\n", 
+    \(\(\(While[Length[results] \[LessEqual] 1000, 
+        elapse = \(-\(Log[Random[]]\/\[Lambda]\)\); 
+        While[elapse + t - t0 > 1, elapse -= 1 - t + t0; t0 += 1; 
+          unemp += 
+            Evaluate[\((s\[LeftDoubleBracket]h\[RightDoubleBracket]\/\(\[Mu]\ \
+\[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \[Alpha]\) + s\
+\[LeftDoubleBracket]h\[RightDoubleBracket]\) - 
+                    unemp)\)\ \((1 - \[ExponentialE]\^\(\(-\((t0 - t)\)\)\ \
+\((\[Mu]\ \[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \
+\[Alpha]\) + s\[LeftDoubleBracket]h\[RightDoubleBracket])\)\))\)]; t = t0; 
+          results = Append[results, {unemp, h}]]; 
+        unemp += 
+          Evaluate[\((s\[LeftDoubleBracket]h\[RightDoubleBracket]\/\(\[Mu]\ \
+\[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \[Alpha]\) + s\
+\[LeftDoubleBracket]h\[RightDoubleBracket]\) - 
+                  unemp)\)\ \((1 - \[ExponentialE]\^\(\(-elapse\)\ \((\[Mu]\ \
+\[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \[Alpha]\) + s\
+\[LeftDoubleBracket]h\[RightDoubleBracket])\)\))\)]; 
+        If[x\[LeftDoubleBracket]h\[RightDoubleBracket] > Random[], h += 1, 
+          h -= 1]; t += elapse;];\)\(\n\)
+    \)\), "\[IndentingNewLine]", 
+    \(usd = {}; vsd = {}; \[Theta]sd = {}; hsd = {}; 
+    ssd = {};\), "\[IndentingNewLine]", 
+    \(uac = {}; vac = {}; \[Theta]ac = {}; hac = {}; 
+    sac = {};\), "\[IndentingNewLine]", 
+    \(uvc = {}; u\[Theta]c = {}; uhc = {}; usc = {}; v\[Theta]c = {}; 
+    vhc = {}; vsc = {}; \[Theta]hc = {}; \[Theta]sc = {}; 
+    hsc = {};\)}], "Input"],
+
+Cell["\<\
+Compute means and standard deviations of summary statistics by running for \
+10,000 \"model economies\" of 212 quarters each. \
+\>", "Text",
+  FontFamily->"Courier New"],
+
+Cell[BoxData[
+    RowBox[{
+      RowBox[{"While", "[", 
+        RowBox[{\(Length[usd] < 10000\), ",", "\n", 
+          
+          RowBox[{\(results = {Last[results]}\), 
+            ";", \(While[Length[results] \[LessEqual] T + 1, 
+              elapse = \(-\(Log[Random[]]\/\[Lambda]\)\); 
+              While[elapse + t - t0 > 1, elapse -= 1 - t + t0; t0 += 1; 
+                unemp += 
+                  Evaluate[\((s\[LeftDoubleBracket]h\[RightDoubleBracket]\/\(\
+\[Mu]\ \[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \[Alpha]\) + \
+s\[LeftDoubleBracket]h\[RightDoubleBracket]\) - 
+                          unemp)\)\ \((1 - \[ExponentialE]\^\(\(-\((t0 - t)\)\
+\)\ \((\[Mu]\ \[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \
+\[Alpha]\) + s\[LeftDoubleBracket]h\[RightDoubleBracket])\)\))\)]; t = t0; 
+                results = Append[results, {unemp, h}]]; 
+              unemp += 
+                Evaluate[\((s\[LeftDoubleBracket]h\[RightDoubleBracket]\/\(\
+\[Mu]\ \[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \[Alpha]\) + \
+s\[LeftDoubleBracket]h\[RightDoubleBracket]\) - 
+                        unemp)\)\ \((1 - \[ExponentialE]\^\(\(-elapse\)\ \((\
+\[Mu]\ \[Theta]\[LeftDoubleBracket]h\[RightDoubleBracket]\^\(1 - \[Alpha]\) + \
+s\[LeftDoubleBracket]h\[RightDoubleBracket])\)\))\)]; 
+              If[x\[LeftDoubleBracket]h\[RightDoubleBracket] > Random[], 
+                h += 1, h -= 1]; t += elapse;]\), ";", 
+            "\n", \(results = Take[results, {2, T + 1}]\), ";", 
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"uvec", "=", 
+              
+              RowBox[{\(Log[\(Transpose[
+                      results]\)\[LeftDoubleBracket]1\[RightDoubleBracket]]\),
+                 "-", 
+                RowBox[{"B", ".", 
+                  RowBox[{
+                  "Log", "[", \(\(Transpose[
+                        results]\)\[LeftDoubleBracket]1\[RightDoubleBracket]\)\
+, 
+                    StyleBox["]",
+                      FontWeight->"Plain"]}]}]}]}], ";", 
+            "\n", \(vvec\  = 
+              Log[\(Transpose[
+                        results]\)\[LeftDoubleBracket]1\[RightDoubleBracket]\
+\ \ \[Theta]\[LeftDoubleBracket]\(Transpose[
+                          results]\)\[LeftDoubleBracket]2\[RightDoubleBracket]\
+\[RightDoubleBracket]] - 
+                B . Log[\(Transpose[
+                          results]\)\[LeftDoubleBracket]1\[RightDoubleBracket]\
+\ \ \[Theta]\[LeftDoubleBracket]\(Transpose[
+                            results]\)\[LeftDoubleBracket]2\
+\[RightDoubleBracket]\[RightDoubleBracket]]\), ";", 
+            "\n", \(\[Theta]vec = vvec - uvec\), ";", 
+            "\n", \(hvec = 
+              Log[\[Mu]\ \[Theta]\[LeftDoubleBracket]\(Transpose[results]\)\
+\[LeftDoubleBracket]2\[RightDoubleBracket]\[RightDoubleBracket]\^\(1 - \
+\[Alpha]\)] - B . 
+                  Log[\[Mu]\ \[Theta]\[LeftDoubleBracket]\(Transpose[results]\
+\)\[LeftDoubleBracket]2\[RightDoubleBracket]\[RightDoubleBracket]\^\(1 - \
+\[Alpha]\)]\), ";", 
+            "\n", \(svec = 
+              Log[s\[LeftDoubleBracket]\(Transpose[
+                        results]\)\[LeftDoubleBracket]2\[RightDoubleBracket]\
+\[RightDoubleBracket]] - 
+                B . Log[
+                    s\[LeftDoubleBracket]\(Transpose[
+                          results]\)\[LeftDoubleBracket]2\[RightDoubleBracket]\
+\[RightDoubleBracket]]\), ";", "\n", 
+            "\[IndentingNewLine]", \(usd = 
+              Append[usd, StandardDeviation[uvec]]\), ";", 
+            "\n", \(vsd = Append[vsd, StandardDeviation[vvec]]\), ";", 
+            "\n", \(\[Theta]sd = 
+              Append[\[Theta]sd, StandardDeviation[\[Theta]vec]]\), ";", 
+            "\n", \(hsd = Append[hsd, StandardDeviation[hvec]]\), ";", 
+            "\n", \(ssd = Append[ssd, StandardDeviation[svec]]\), ";", 
+            "\n", \(uac = 
+              Append[uac, Correlation[Drop[uvec, 1], Drop[uvec, \(-1\)]]]\), 
+            ";", "\n", \(vac = 
+              Append[vac, Correlation[Drop[vvec, 1], Drop[vvec, \(-1\)]]]\), 
+            ";", "\n", \(\[Theta]ac = 
+              Append[\[Theta]ac, 
+                Correlation[Drop[\[Theta]vec, 1], 
+                  Drop[\[Theta]vec, \(-1\)]]]\), ";", 
+            "\n", \(hac = 
+              Append[hac, Correlation[Drop[hvec, 1], Drop[hvec, \(-1\)]]]\), 
+            ";", "\n", \(sac = 
+              Append[sac, Correlation[Drop[svec, 1], Drop[svec, \(-1\)]]]\), 
+            ";", "\n", \(uvc\  = \ Append[uvc, Correlation[uvec, vvec]]\), 
+            ";", "\n", \(u\[Theta]c\  = \ 
+              Append[u\[Theta]c, Correlation[uvec, \[Theta]vec]]\), ";", 
+            "\n", \(uhc\  = \ Append[uhc, Correlation[uvec, hvec]]\), ";", 
+            "\n", \(usc\  = \ Append[usc, Correlation[uvec, svec]]\), ";", 
+            "\n", \(v\[Theta]c\  = \ 
+              Append[v\[Theta]c, Correlation[vvec, \[Theta]vec]]\), ";", 
+            "\n", \(vhc\  = \ Append[vhc, Correlation[vvec, hvec]]\), ";", 
+            "\n", \(vsc\  = \ Append[vsc, Correlation[vvec, svec]]\), ";", 
+            "\n", \(\[Theta]hc\  = \ 
+              Append[\[Theta]hc, Correlation[\[Theta]vec, hvec]]\), ";", 
+            "\n", \(\[Theta]sc\  = \ 
+              Append[\[Theta]sc, Correlation[\[Theta]vec, svec]]\), ";", 
+            "\n", \(hsc\  = \ Append[hsc, Correlation[hvec, svec]]\), ";"}]}],
+         "\[IndentingNewLine]", "]"}], ";"}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Mean estimates", "Subsubsection"],
+
+Cell["\<\
+Columns refer are for unemployment, vacancies, v-u ratio, job-finding rate, \
+separations. Rows are for standard deviation, autocorrelation, and then the \
+correlation matrix. \
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(TableForm[{{Mn[usd], Mn[vsd], Mn[\[Theta]sd], Mn[hsd], 
+          Mn[ssd]}, {Mn[uac], Mn[vac], Mn[\[Theta]ac], Mn[hac], Mn[sac]}, {1, 
+          Mn[uvc], Mn[u\[Theta]c], Mn[uhc], 
+          Mn[usc]}, \[IndentingNewLine]{"\<-\>", 1, Mn[v\[Theta]c], Mn[vhc], 
+          Mn[vsc]}, \[IndentingNewLine]{"\<-\>", "\<-\>", 1, Mn[\[Theta]hc], 
+          Mn[\[Theta]sc]}, \[IndentingNewLine]{"\<-\>", "\<-\>", "\<-\>", 1, 
+          Mn[hsc]}, \[IndentingNewLine]{"\<-\>", "\<-\>", "\<-\>", "\<-\>", 
+          1}}]\)], "Input"],
+
+Cell[BoxData[
+    TagBox[GridBox[{
+          {"0.065`", "0.059000000000000004`", "0.006`", "0.002`", "0.075`"},
+          {"0.864`", "0.862`", "0.732`", "0.732`", "0.733`"},
+          {"1", "0.999`", \(-0.906`\), \(-0.906`\), "0.908`"},
+          {"\<\"-\"\>", "1", \(-0.887`\), \(-0.887`\), "0.888`"},
+          {"\<\"-\"\>", "\<\"-\"\>", "1", "1.`", \(-0.999`\)},
+          {"\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "1", \(-0.999`\)},
+          {"\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "1"}
+          },
+        RowSpacings->1,
+        ColumnSpacings->3,
+        RowAlignments->Baseline,
+        ColumnAlignments->{Left}],
+      Function[ BoxForm`e$, 
+        TableForm[ BoxForm`e$]]]], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Bootstrapped Standard Errors", "Subsubsection"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(TableForm[{{SD[usd], SD[vsd], SD[\[Theta]sd], SD[hsd], 
+          SD[ssd]}, {SD[uac], SD[vac], SD[\[Theta]ac], SD[hac], 
+          SD[sac]}, \[IndentingNewLine]{"\<-\>", SD[uvc], SD[u\[Theta]c], 
+          SD[uhc], SD[usc]}, \[IndentingNewLine]{"\<-\>", "\<-\>", 
+          SD[v\[Theta]c], SD[vhc], 
+          SD[vsc]}, \[IndentingNewLine]{"\<-\>", "\<-\>", "\<-\>", 
+          SD[\[Theta]hc], 
+          SD[\[Theta]sc]}, \[IndentingNewLine]{"\<-\>", "\<-\>", "\<-\>", \
+"\<-\>", SD[
+            hsc]}, \[IndentingNewLine]{"\<-\>", "\<-\>", "\<-\>", "\<-\>", \
+"\<-\>"}}]\)], "Input"],
+
+Cell[BoxData[
+    TagBox[GridBox[{
+          {"0.007`", "0.006`", "0.001`", "0", "0.007`"},
+          {"0.026000000000000002`", "0.026000000000000002`", "0.048`", 
+            "0.048`", "0.048`"},
+          {"\<\"-\"\>", "0", "0.017`", "0.017`", "0.017`"},
+          {"\<\"-\"\>", "\<\"-\"\>", "0.02`", "0.02`", "0.021`"},
+          {"\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "0", "0"},
+          {"\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "0"},
+          {"\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>", "\<\"-\"\>"}
+          },
+        RowSpacings->1,
+        ColumnSpacings->3,
+        RowAlignments->Baseline,
+        ColumnAlignments->{Left}],
+      Function[ BoxForm`e$, 
+        TableForm[ BoxForm`e$]]]], "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+FrontEndVersion->"5.0 for Microsoft Windows",
+ScreenRectangle->{{0, 1600}, {0, 1147}},
+WindowSize->{868, 1129},
+WindowMargins->{{Automatic, -1}, {Automatic, 1}},
+Magnification->1.25
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[1776, 53, 69, 0, 48, "Subsection"],
+Cell[1848, 55, 823, 24, 172, "Input"],
+
+Cell[CellGroupData[{
+Cell[2696, 83, 87, 1, 34, "Subsubsection"],
+Cell[2786, 86, 611, 21, 80, "Text"],
+Cell[3400, 109, 465, 10, 183, "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[3902, 124, 45, 0, 34, "Subsubsection"],
+Cell[3950, 126, 775, 14, 300, "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[4762, 145, 62, 0, 34, "Subsubsection"],
+Cell[4827, 147, 760, 11, 210, "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[5624, 163, 46, 0, 34, "Subsubsection"],
+Cell[5673, 165, 156, 2, 59, "Text"],
+Cell[5832, 169, 890, 17, 328, "Input"],
+Cell[6725, 188, 229, 5, 80, "Text"],
+
+Cell[CellGroupData[{
+Cell[6979, 197, 459, 7, 87, "Input"],
+Cell[7441, 206, 187, 3, 35, "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[7677, 215, 129, 1, 34, "Subsubsection"],
+Cell[7809, 218, 59, 1, 38, "Text"],
+Cell[7871, 221, 1968, 35, 393, "Input"],
+Cell[9842, 258, 179, 4, 59, "Text"],
+Cell[10024, 264, 5433, 100, 885, "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[15494, 369, 39, 0, 34, "Subsubsection"],
+Cell[15536, 371, 200, 4, 59, "Text"],
+
+Cell[CellGroupData[{
+Cell[15761, 379, 538, 8, 161, "Input"],
+Cell[16302, 389, 708, 15, 156, "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[17059, 410, 53, 0, 34, "Subsubsection"],
+
+Cell[CellGroupData[{
+Cell[17137, 414, 604, 11, 161, "Input"],
+Cell[17744, 427, 734, 16, 156, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+
