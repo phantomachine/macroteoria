@@ -1,9 +1,8 @@
-*********************************************************
 Unemployment over the business cycle and DMP with shocks
-*********************************************************
+---------------------------------------------------------
 
 Empirical Case Study
-####################
+====================
 Here we replicate some famous dataset describing the phenomenon of job unemployment, vacancies, job finding rate, market tightness over a sample of the US Business cycle.
 
 File: 
@@ -13,7 +12,7 @@ File:
 
 
 DMP's Causal Mechanism and Quantitative Theory
-###############################################
+==============================================
 
 Then we will work towards synthesizing the empirical regularities using the Nobel-prize winning model of Diamond, Mortensen and Pissarides. First, we'll start simple, by studying the DMP model's deterministic behavior using a local, first-order perturbation solution method. Then, we'll come back full-circle and employ a global, nonlinear solution method called *time interation* (TI) which is similar to what we studied earlier by successively getting better approximations of a nonlinear decision function characterized by a system of equilibrium/Euler conditions.
 
