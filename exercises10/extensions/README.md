@@ -13,11 +13,10 @@ File:
 
 DMP's Causal Mechanism and Quantitative Theory
 -----------------------------------------------
-
 Then we will work towards synthesizing the empirical regularities using the Nobel-prize winning model of Diamond, Mortensen and Pissarides. First, we'll start simple, by studying the DMP model's deterministic behavior using a local, first-order perturbation solution method. Then, we'll come back full-circle and employ a global, nonlinear solution method called *time interation* (TI) which is similar to what we studied earlier by successively getting better approximations of a nonlinear decision function characterized by a system of equilibrium/Euler conditions.
 
 A local (deterministic) version of DMP to illustrate basic dynamics of DMP
-***************************************************************************
+--------------------------------------------------------------------------
 
 This first part replicates the discussion in Miao's textbook 18.1.2 (transitional dynamics). We'll study the deterministic, dynamic behavior of the DMP model.
 
@@ -26,7 +25,7 @@ File:
 * `Mortensen-Pissarides S&M Model.ipynb`
 
 A Non-linear global solution of DMP
-**************************************************************************
+-------------------------------------
 
 Now we do the second part, using a TI method. Petrosky-Nadeau and Zhang demonstrated that in the DMP model the old-school practice of log-linearizing the model equilibrium mapping to get local approximant/solutions may be inaccurate. (Unlike in typical neoclassical and NK models, models with search market frictions may generate considerably greater nonlinearity due to externalities in decentralized market trades.)
 
