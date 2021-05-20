@@ -251,15 +251,19 @@ class Bewley_Aiyagari(object):
             vinterp[index_enext, :] = V_fitted(anext)
         # Calculate expected value given k_{+1} conditional on index_z:
         return prob.dot(vinterp)
-    
-    def BudgetConstraint(self, action, state, params):
-        """Aiyagari's household budget constraint"""
+
+    def TotalIncome(self, state, params):
+        """Total labor and capital income"""
         # Enumerate states
         a, e = state
         # Prices
         r, w = params
+        return a*(1.0 + r) + w*e
+    
+    def BudgetConstraint(self, action, state, params):
+        """Aiyagari's household budget constraint"""
         # budget constraint
-        c = a*(1.0 + r) + w*e - action
+        c = self.TotalIncome(state, params) - action
         return c
 
     def TotalPayoff_scalar(self, action, state, v, params):
@@ -335,7 +339,9 @@ class Bewley_Aiyagari(object):
         for idx_a, a in enumerate(self.asset_grid):
             for idx_e, e in enumerate(self.S):
                 # Feasibility - upper bound at current state (a,e)
-                a_upper = (1. + r)*a + w*e
+                # a_upper = (1. + r)*a + w*e
+                state = [a, e]
+                a_upper = self.TotalIncome(state, params)
                 a_max = min(a_upper, self.a_ub)
                 # Get optimizer and value at state (a,e)
                 states = [a,e]
@@ -364,12 +370,15 @@ class Bewley_Aiyagari(object):
         w = self.CobbDouglas_mpl(r)
         # 1. Current states: All pairs of (a,e) 
         all_states = [self.amat, self.emat]
+        # Parameters
+        params=[r,w]
+
         for iter_policy in range(self.MAXITER_policy):
             # 2. For fixed anext, compute its induced value function v
-            v = self.ValueFixedPolicy(anext, all_states, v, params=[r,w])
+            v = self.ValueFixedPolicy(anext, all_states, v, params)
             # 3. One-shot deviation principle: if exists optimal deviation,
             #    then anext_update would be different to and replaces anext
-            anext_update, v_update = self.Bellman(v, params=[r,w])
+            anext_update, v_update = self.Bellman(v, params)
             # 4. Measure how different they are
             gap_policy = self.supnorm(anext, anext_update)
             if display_howard is True:
