@@ -296,7 +296,7 @@ class Bewley_Aiyagari(object):
         e = np.atleast_2d(e)
         anext = np.atleast_2d(anext)
         # Budget constraint
-        r, w = params
+        # r, w = params
         # cmat = (1. + r)*a + w*e - anext
         all_state = [a, e]
         cmat = self.BudgetConstraint(anext, all_state, params)
@@ -335,7 +335,7 @@ class Bewley_Aiyagari(object):
         """
         anext_update = np.empty(v.shape)
         v_update = anext_update.copy()
-        r, w = params
+        # r, w = params
         for idx_a, a in enumerate(self.asset_grid):
             for idx_e, e in enumerate(self.S):
                 # Feasibility - upper bound at current state (a,e)
@@ -356,7 +356,7 @@ class Bewley_Aiyagari(object):
                 v_update[idx_a, idx_e] = -v_star
         return anext_update, v_update
     
-    def Howard(self, r, anext=None, v=None, display_howard=False): 
+    def Howard(self, params, anext=None, v=None, display_howard=False): 
         """Given current aggregate price r, and last guess of policy, 
         get agent's updated best response. Uses Howard's policy improvement 
         algorithm: see LS, Chapter 4.4.
@@ -367,11 +367,11 @@ class Bewley_Aiyagari(object):
         if v is None:
             v = np.zeros((self.amat.shape))
         # Current (guess) relative wage as function of r
-        w = self.CobbDouglas_mpl(r)
+        # w = self.CobbDouglas_mpl(r)
         # 1. Current states: All pairs of (a,e) 
         all_states = [self.amat, self.emat]
         # Parameters
-        params=[r,w]
+        # params=[r,w]
 
         for iter_policy in range(self.MAXITER_policy):
             # 2. For fixed anext, compute its induced value function v
