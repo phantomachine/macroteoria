@@ -208,10 +208,20 @@ class Bewley_Aiyagari(object):
         """CRRA family of utility functions"""
         THETA = self.THETA
         if THETA == 1.0:
-            ohjoy = np.log(c)
+            ohjoy = np.log((c+1e-4))
         elif THETA != 1.0 and THETA > 0.0:
-            ohjoy = (c**(1.0 - THETA) - 1.0)/ (1.0 - THETA)        
+            ohjoy = ((c+1e-4)**(1.0 - THETA) - 1.0)/ (1.0 - THETA)        
         return ohjoy
+    
+    def SteadyState_RA(self):
+        """Returns speacial-case Representative Agent economy's
+        steady state equilibrium capital stock. Use this to guide
+        choice of interval for asset space in the Heterogenous Agent
+        economy. Idea: since population is normalized to size 1, this 
+        RA equilibrium's K should be an element of the interval 
+        [a_lb, a_ub] of the HA economy."""
+        Kss = self.N*(self.ALPHA/(1.0/self.BETA-1.0+self.DELTA))**(1.0/(1.0-self.ALPHA))
+        return Kss
     
     def CobbDouglas_mpk(self, k):
         """Marginal product of capital according to the world of Cobb-Douglas"""
@@ -302,7 +312,8 @@ class Bewley_Aiyagari(object):
         cmat = self.BudgetConstraint(anext, all_state, params)
 
         # Inada conditions to bound c(a,e) > 0 and is affordable a.s.
-        umat = np.tile(-np.inf, cmat.shape)      # Worst payoffs (for possible c <= 0)
+        # umat = np.tile(-np.inf, cmat.shape)      # Worst payoffs (for possible c <= 0)
+        umat = np.tile(-1e+20, cmat.shape)      # Worst payoffs (for possible c <= 0)
         umat[cmat > 0] = self.U(cmat[cmat > 0])  # Replace with U(c) for feasible c > 0  
         # Derive value function induced by fixed rule, at each (a,e) pair:
         # 1. Calculate continuation value function
@@ -421,9 +432,11 @@ class Bewley_Aiyagari(object):
                 a_path.append(policy[-1, idx_e])
             else:
                 # Typical in-betweeners
-                astar = np.interp(a_path[t], self.asset_grid, policy[:, idx_e])
+                # astar = np.interp(a_path[t], self.asset_grid, policy[:, idx_e])
+                g_fitted = self.InterpFun1d(self.asset_grid, policy[:, idx_e])
+                astar = g_fitted(a_path[t])
                 a_path.append(astar)
-        return np.asarray(a_path), np.asarray(e_path) 
+        return np.asarray(a_path), np.asarray(e_path)
     
     def AssetDistributionStats(self, a_path):
         """First four moments of a distribution for data: a_path"""
@@ -450,15 +463,20 @@ class Bewley_Aiyagari(object):
                 r_update = smooth*r + (1. - smooth)*r_lb
             else:
                 r_update = smooth*r + (1. - smooth)*r_update
-                r_lb = r_update
-            r_ub = r
+                # Narrow ub down by new update
+                # r_lb = r_update
+                self.r_lb = r_update
+            # r_ub = r
+            self.r_ub = r
         else:
             if r_update > r_ub:
                 r_update = smooth*r + (1. - smooth)*r_ub
             else:
                 r_update = smooth*r + (1. - smooth)*r_update
-                r_lb = r_update
-            r_lb = r
+                # r_lb = r_update
+                self.r_lb = r_update
+            # r_lb = r
+            self.r_lb = r
         # Auctioneer checks if r_update is no different from r
         error = np.absolute(r_update - r)
         
@@ -470,7 +488,7 @@ class Bewley_Aiyagari(object):
                                        facecolor='green', alpha=0.5)
         plt.xlabel('Asset Position')
         plt.ylabel('Probability')
-        plt.axis([0., 1.2*bins.max(), 0., freq.max()])
+        plt.axis([0.9*bins.min(), 1.2*bins.max(), 0., freq.max()])
         plt.grid(True)
         plt.show()
         return freq, bins
