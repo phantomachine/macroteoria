@@ -208,9 +208,9 @@ class Bewley_Aiyagari(object):
         """CRRA family of utility functions"""
         THETA = self.THETA
         if THETA == 1.0:
-            ohjoy = np.log((c+1e-4))
+            ohjoy = np.log((c))
         elif THETA != 1.0 and THETA > 0.0:
-            ohjoy = ((c+1e-4)**(1.0 - THETA) - 1.0)/ (1.0 - THETA)        
+            ohjoy = ((c)**(1.0 - THETA) - 1.0)/ (1.0 - THETA)        
         return ohjoy
     
     def SteadyState_RA(self):
@@ -265,7 +265,7 @@ class Bewley_Aiyagari(object):
     def TotalIncome(self, state, params):
         """Total labor and capital income"""
         # Enumerate states
-        a, e = state
+        a, e = state[0], state[1]
         # Prices
         r, w = params
         return a*(1.0 + r) + w*e
@@ -280,7 +280,7 @@ class Bewley_Aiyagari(object):
         """Objective function evaluated at current (action, state) pair, given
         aggregate relative price r, and, continuation value function v"""
         # Enumerate states
-        a, e = state # (a,e) could be scalars or arrays!
+        a, e = state[0], state[1] # (a,e) could be scalars or arrays!
         # Get index of e in array S
         index_e = (self.S).tolist().index(e)
         # Budget constraint
@@ -301,7 +301,7 @@ class Bewley_Aiyagari(object):
         """Objective function evaluated at current (action, state) pair, given
         aggregate relative price r, and, continuation value function v"""
         # Enumerate states (a,e): could be scalars or arrays!
-        a, e = state
+        a, e = state[0], state[1]
         a = np.atleast_2d(a) # ensure indexing works even if (a,e) scalars
         e = np.atleast_2d(e)
         anext = np.atleast_2d(anext)
@@ -355,11 +355,10 @@ class Bewley_Aiyagari(object):
                 a_upper = self.TotalIncome(state, params)
                 a_max = min(a_upper, self.a_ub)
                 # Get optimizer and value at state (a,e)
-                states = [a,e]
                 anext_star, v_star, ierr, numfunc = fminbound(
                                                     self.TotalPayoff_scalar, 
                                                     self.a_lb, a_max, 
-                                                    args=(states, v, params),
+                                                    args=(state, v, params),
                                                     full_output=True
                                                     )
                 # Store them to build up policy and value functions' updates
@@ -490,6 +489,7 @@ class Bewley_Aiyagari(object):
         plt.ylabel('Probability')
         plt.axis([0.9*bins.min(), 1.2*bins.max(), 0., freq.max()])
         plt.grid(True)
+        plt.title("Ergodic distribution of assets (single agent over time)")
         plt.show()
         return freq, bins
     
